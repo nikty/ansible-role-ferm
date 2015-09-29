@@ -48,18 +48,17 @@
 
 - name: Ferm | Create extra ferm conf files on non-RedHat
   template: src=ferm.conf.j2 dest=/etc/ferm.d/{{item.key}}.conf mode=0655 owner=root group=root backup=yes
-  with_dict: ferm_rules_extra
+  with_dict: ferm_rules_extra | default({})
   notify:
     - reload ferm
   when: ansible_os_family != "RedHat" and ferm_rules_extra is defined
 
 - name: Ferm | Create extra ferm conf files on RedHat
   template: src=ferm.conf.j2 dest=/etc/ferm/ferm.d/{{item.key}}.conf mode=0655 owner=root group=root backup=yes
-  with_dict: ferm_rules_extra
+  with_dict: ferm_rules_extra | default({})
   notify:
     - reload ferm
-  when: ansible_os_family == "RedHat" and ferm_rules_extra is defined
-
+  when: ansible_os_family == "RedHat" and ferm_rules_extra
 
 - meta: flush_handlers
 
