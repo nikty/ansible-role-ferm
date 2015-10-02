@@ -27,4 +27,4 @@ ferm_rules:
           comment: "connection tracking"
 
 disable_other_firewalls: [firewalld]
-ferm_fail2ban: True
+ferm_fail2ban: False
