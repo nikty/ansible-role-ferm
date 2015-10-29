@@ -6,9 +6,12 @@
     name: ferm
     state: present
 
+# https://github.com/ansible/ansible-modules-core/issues/593
+# msg: no service or tool found for: firewalld
 - name: Disable firewalld
   service: name={{ item }} state=stopped enabled=no
   with_items: disable_other_firewalls
+  ignore_errors: True
 
 - name: Ferm | Display rules var
   debug: var="{{ferm_rules}}"
