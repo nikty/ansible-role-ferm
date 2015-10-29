@@ -28,11 +28,11 @@
   when: ansible_os_family == "RedHat"
 
 - name: Ferm | Include ferm.d directory on non-RedHat
-  lineinfile: dest=/etc/ferm/ferm.conf line="@include 'ferm.d/';" backup=yes insertbefore=BOF create=yes
+  lineinfile: dest=/etc/ferm/ferm.conf line="@include '/etc/ferm.d/';" backup=yes insertbefore=BOF create=yes
   when: ansible_os_family != "RedHat"
 
 - name: Ferm | Include ferm.d directory on RedHat
-  lineinfile: dest=/etc/ferm.conf line="@include 'ferm/ferm.d/';" backup=yes insertbefore=BOF create=yes
+  lineinfile: dest=/etc/ferm.conf line="@include '/etc/ferm/ferm.d/';" backup=yes insertbefore=BOF create=yes
   when: ansible_os_family == "RedHat"
 
 - name: Ferm | Create the default ferm conf files on non-RedHat
