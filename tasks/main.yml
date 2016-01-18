@@ -6,6 +6,12 @@
     name: ferm
     state: present
 
+- name: Install iptables
+  action:
+    module: "{{ ansible_pkg_mgr }}"
+    name: iptables
+    state: present
+
 # https://github.com/ansible/ansible-modules-core/issues/593
 # msg: no service or tool found for: firewalld
 - name: Disable firewalld
