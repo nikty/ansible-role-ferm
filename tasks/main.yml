@@ -1,12 +1,12 @@
 ---
 # This Playbook configure firewall 'ferm'
-- name: Install Ferm
+- name: Ferm | Install Ferm
   action:
     module: "{{ ansible_pkg_mgr }}"
     name: ferm
     state: present
 
-- name: Install iptables
+- name: Ferm | Install iptables
   action:
     module: "{{ ansible_pkg_mgr }}"
     name: iptables
@@ -14,13 +14,13 @@
 
 # https://github.com/ansible/ansible-modules-core/issues/593
 # msg: no service or tool found for: firewalld
-- name: Disable firewalld
+- name: Ferm | Disable firewalld
   service: name={{ item }} state=stopped enabled=no
   with_items: "{{ disable_other_firewalls }}"
   ignore_errors: True
 
 - name: Ferm | Display rules var
-  debug: var=ferm_rules
+  debug: var=ferm_rules verbosity=1
 
 - name: Ferm | Make sure the directory for firewall rules exist
   file: path=/etc/ferm state=directory owner=root group=root
@@ -71,14 +71,14 @@
 
 - meta: flush_handlers
 
-- name: reload ferm
+- name: Ferm | Reload ferm
   service: name=ferm state=restarted
   changed_when: False
   register: fermreloaded
 
-- name: enable ferm on boot
+- name: Ferm | Enable ferm on boot
   service: name=ferm enabled=yes
 
-- name: if ferm_fail2ban is True - restart fail2ban as well if ferm is reloaded
+- name: Ferm | If ferm_fail2ban is True - restart fail2ban as well if ferm is reloaded
   service: name=fail2ban state=restarted
   when: fermreloaded.changed and ferm_fail2ban
