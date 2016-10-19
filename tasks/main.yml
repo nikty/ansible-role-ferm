@@ -69,7 +69,8 @@
     - reload ferm
   when: ansible_os_family == "RedHat" and ferm_rules_extra
 
-- meta: flush_handlers
+- name: Flush handlers
+  meta: flush_handlers
 
 - name: Ferm | Reload ferm
   service: name=ferm state=restarted
