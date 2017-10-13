@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/CSC-IT-Center-for-Science/ansible-ferm-firewall.svg)](https://travis-ci.org/CSC-IT-Center-for-Science/ansible-ferm-firewall)
+[![Build Status](https://travis-ci.org/CSCfi/ansible-ferm-firewall.svg)](https://travis-ci.org/CSCfi/ansible-ferm-firewall)
 Ferm-Firewall
 ==========
 
