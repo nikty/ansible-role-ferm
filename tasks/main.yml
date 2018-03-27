@@ -57,6 +57,7 @@
     backup: yes
     insertbefore: BOF
     create: yes
+  check_mode: no
   when: ansible_os_family != "RedHat"
 
 - name: Ferm | Include ferm.d directory on RedHat
@@ -66,6 +67,7 @@
     backup: yes
     insertbefore: BOF
     create: yes
+  check_mode: no
   when: ansible_os_family == "RedHat"
 
 - name: Clean up old backups from ferm.d on RedHat
