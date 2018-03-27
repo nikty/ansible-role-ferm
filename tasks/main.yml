@@ -54,6 +54,7 @@
   lineinfile:
     dest: /etc/ferm/ferm.conf
     line: '@include "/etc/ferm.d/";'
+    regexp: '^\@include'
     backup: yes
     insertbefore: BOF
     create: yes
@@ -64,6 +65,7 @@
   lineinfile:
     dest: /etc/ferm.conf
     line: '@include "/etc/ferm/ferm.d/";'
+    regexp: '^\@include'
     backup: yes
     insertbefore: BOF
     create: yes
