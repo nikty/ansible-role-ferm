@@ -53,7 +53,7 @@
 - name: Ferm | Include ferm.d directory on non-RedHat
   lineinfile:
     dest: /etc/ferm/ferm.conf
-    line: "@include '/etc/ferm.d/';"
+    line: '@include "/etc/ferm.d/";'
     backup: yes
     insertbefore: BOF
     create: yes
@@ -62,7 +62,7 @@
 - name: Ferm | Include ferm.d directory on RedHat
   lineinfile:
     dest: /etc/ferm.conf
-    line: '@include '/etc/ferm/ferm.d/';'
+    line: '@include "/etc/ferm/ferm.d/";'
     backup: yes
     insertbefore: BOF
     create: yes
