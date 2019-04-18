@@ -1,4 +1,5 @@
 # file: roles/firewall/handlers/ferm.yml
 
 - name: reload ferm
-  service: name=ferm state=restarted
+  set_fact:
+    fermreloaded: True
