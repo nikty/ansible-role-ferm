@@ -106,4 +106,4 @@
     name: "{{ item }}"
     state: restarted
   with_items: "{{ ferm_reload_services }}"
-  when: fermreloaded is defined
+  when: fermreloaded is defined and ferm_reload_services is defined
