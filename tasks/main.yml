@@ -93,7 +93,7 @@
 - name: Ferm | Create the default ferm conf files on non-RedHat
   template:
     src: ferm.conf.j2
-    dest: "/etc/ferm.d/{{item.key}}.conf"
+    dest: "/etc/ferm.d/{{item.key}}"
     mode: 0655
     owner: root
     group: root
@@ -106,7 +106,7 @@
 - name: Ferm | Create the default ferm conf files on RedHat
   template:
     src: ferm.conf.j2
-    dest: "/etc/ferm/ferm.d/{{item.key}}.conf"
+    dest: "/etc/ferm/ferm.d/{{item.key}}"
     mode: 0655
     owner: root
     group: root
@@ -119,7 +119,7 @@
 - name: Ferm | Create extra ferm conf files on non-RedHat
   template:
     src: ferm.conf.j2
-    dest: "/etc/ferm.d/{{item.key}}.conf"
+    dest: "/etc/ferm.d/{{item.key}}"
     mode: 0655
     owner: root
     group: root
@@ -132,7 +132,7 @@
 - name: Ferm | Create extra ferm conf files on RedHat
   template:
     src: ferm.conf.j2
-    dest: "/etc/ferm/ferm.d/{{item.key}}.conf"
+    dest: "/etc/ferm/ferm.d/{{item.key}}"
     mode: 0655
     owner: root
     group: root
