@@ -31,15 +31,16 @@
     owner: root
     group: root
 
-- name: Include ferm.d directory
-  lineinfile:
+- name: Configure ferm.conf
+  template:
+    src: ferm.conf.j2
     dest: /etc/ferm/ferm.conf
-    line: '@include "/etc/ferm.d/";'
-    regexp: '^\@include'
+    mode: 0655
+    owner: root
+    group: root
     backup: yes
-    insertbefore: BOF
-    create: yes
-  check_mode: no
+  notify:
+    - reload ferm
 
 - name: Clean up old backups from ferm.d
   file: 
@@ -71,7 +72,7 @@
 
 - name: Create the default ferm conf files
   template:
-    src: ferm.conf.j2
+    src: rules.conf.j2
     dest: "/etc/ferm.d/{{item.key}}"
     mode: 0655
     owner: root
@@ -83,7 +84,7 @@
 
 - name: Create extra ferm conf files
   template:
-    src: ferm.conf.j2
+    src: rules.conf.j2
     dest: "/etc/ferm.d/{{item.key}}"
     mode: 0655
     owner: root
