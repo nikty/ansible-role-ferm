@@ -90,6 +90,41 @@
     - /etc/ferm/ferm.d/*.bak
   when: ansible_os_family != "RedHat"
 
+- name: Register ferm.d contents
+  shell: ls /etc/ferm/ferm.d
+  register: fermd_contents
+  when: ansible_os_family == "RedHat"
+  changed_when: False
+
+- name: Register ferm.d contents on non-RedHat
+  shell: ls -A1 /etc/ferm.d/
+  register: fermd_contents
+  when: ansible_os_family != "RedHat"
+  changed_when: False
+
+- debug:
+    var: fermd_contents
+    verbosity: 1
+
+- debug:
+    var: ferm_rule_files
+    verbosity: 1
+
+- name: Clean up unmanaged files from ferm.d
+  file:
+    path: "/etc/ferm/ferm.d/{{ item }}"
+    state: absent
+  with_items: "{{ fermd_contents.stdout_lines }}"
+  when: (item not in ferm_rules) and ansible_os_family == "RedHat"
+
+
+- name: Clean up unmanaged files from ferm.d on non-RedHat
+  file:
+    path: "/etc/ferm.d/{{ item }}"
+    state: absent
+  with_items: "{{ fermd_contents.stdout_lines }}"
+  when: ( item not in ferm_rules) and ansible_os_family != "RedHat"
+
 - name: Ferm | Create the default ferm conf files on non-RedHat
   template:
     src: ferm.conf.j2
