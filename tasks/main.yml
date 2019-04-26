@@ -1,5 +1,5 @@
 ---
-# This Playbook configure firewall 'ferm'
+
 - name: Install requirements
   action:
     module: "{{ ansible_pkg_mgr }}"
@@ -9,8 +9,6 @@
     - ferm
     - iptables
 
-# https://github.com/ansible/ansible-modules-core/issues/593
-# msg: no service or tool found for: firewalld
 - name: Disable other iptable frontends
   service:
     name: "{{ item }}"
