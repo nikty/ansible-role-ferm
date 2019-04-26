@@ -42,14 +42,6 @@
   notify:
     - reload ferm
 
-- name: Clean up old backups from ferm.d
-  file: 
-    path: "{{ item }}"
-    state: absent
-  with_fileglob: 
-    - /etc/ferm.d/*~
-    - /etc/ferm/ferm.d/*.bak
-
 - name: Register ferm.d contents
   shell: ls -A1 /etc/ferm.d/
   register: fermd_contents
