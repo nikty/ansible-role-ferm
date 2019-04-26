@@ -1,0 +1,101 @@
+---
+
+ferm_disable_firewalls: []
+
+ferm_rules:
+  01-policies:
+    - chain: INPUT
+      domains: [ip, ip6]
+      rules:
+        - rule: policy ACCEPT
+          rule: interface lo ACCEPT
+    - chain: OUTPUT
+      domains: [ip, ip6]
+      rules:
+        - rule: policy ACCEPT
+    - chain: FORWARD
+      domains: [ip, ip6]
+      rules:
+        - rule: policy ACCEPT
+
+  02-conntrack:
+    - chain: INPUT
+      domains: [ip, ip6]
+      rules:
+        - rule: mod conntrack ctstate INVALID DROP
+        - rule: mod conntrack ctstate (ESTABLISHED RELATED) ACCEPT
+    - chain: FORWARD
+      domains: [ ip, ip6]
+      rules:
+        - rule: mod conntrack ctstate INVALID DROP
+        - rule: mod conntrack ctstate (ESTABLISHED RELATED) ACCEPT
+
+  04-icmp-4:
+    - chain: INPUT
+      domains: [ip]
+      rules:
+        - rule: proto icmp icmp-type 3 ACCEPT
+          comment: "Destination unreachable"
+        - rule: proto icmp icmp-type 8 ACCEPT
+          comment: "Echo Request"
+        - rule: proto icmp icmp-type 11 ACCEPT
+          comment: "Time Exceeded"
+
+  06-icmp-6:
+    - chain: INPUT
+      domains: [ip6]
+      rules:
+        - rule: proto icmp jump ICMPV6
+          comment: "Filter IPv6 ICMP"
+    - chain: ICMPV6
+      domains: [ip6]
+      rules:
+        - rule: proto ipv6-icmp icmp-type 1 ACCEPT
+          comment: "Destination unreachable"
+        - rule: proto ipv6-icmp icmp-type 2 ACCEPT
+          comment: "Packet too big"
+        - rule: proto ipv6-icmp icmp-type 3 ACCEPT
+          comment: "Time Exceeded"
+        - rule: proto ipv6-icmp icmp-type 128 ACCEPT
+          comment: "Echo Request"
+        - rule: proto ipv6-icmp icmp-type 130 saddr fe80::/10 ACCEPT
+          comment: "Multicast listener Query"
+        - rule: proto ipv6-icmp icmp-type 131 saddr fe80::/10 ACCEPT
+          comment: "Multicast listeners Report"
+        - rule: proto ipv6-icmp icmp-type 132 saddr fe80::/10 ACCEPT
+          comment: "Multicast listeners Done"
+        - rule: proto ipv6-icmp icmp-type 135 ACCEPT
+          comment: "Neighbor Solicitation"
+        - rule: proto ipv6-icmp icmp-type 136 ACCEPT
+          comment: "Neighbor Advertisement"
+        - rule: proto ipv6-icmp icmp-type 141 ACCEPT
+          comment: "Inverse Neighbor Discovery"
+        - rule: proto ipv6-icmp icmp-type 142 ACCEPT
+          comment: "Inverse Neighbor Discovery"
+        - rule: proto ipv6-icmp icmp-type 143 saddr fe80::/10 ACCEPT
+          comment: "Multicast listeners Report v2"
+        - rule: proto ipv6-icmp icmp-type 148 ACCEPT
+          comment: "Certification Path Solicitation"
+        - rule: proto ipv6-icmp icmp-type 149 ACCEPT
+          comment: "Certification Path Advertisement"
+        - rule: proto ipv6-icmp icmp-type 151 saddr fe80::/10 ACCEPT
+          comment: "Multicast Router Advertisement"
+        - rule: proto ipv6-icmp icmp-type 152 saddr fe80::/10 ACCEPT
+          comment: "Multicast Router Solicitation"
+        - rule: proto ipv6-icmp icmp-type 153 saddr fe80::/10 ACCEPT
+          comment: "Multicast Router Termination"
+        - rule: proto ipv6-icmp icmp-type 157 ACCEPT
+          comment: "Duplicate Address Detection Request"
+        - rule: proto ipv6-icmp icmp-type 158 ACCEPT
+          comment: "Duplicate Address Detection Confirmation"
+        - rule: jump RETURN
+
+  99-reject:
+    - chain: INPUT
+      domains: [ip, ip6]
+      rules:
+        - rule: REJECT reject-with icmp-host-prohibited
+    - chain: FORWARD
+      domains: [ip, ip6]
+      rules:
+        - rule: REJECT reject-with icmp-host-prohibited
