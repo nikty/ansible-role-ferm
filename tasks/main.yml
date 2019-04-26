@@ -24,28 +24,12 @@
     var: ferm_rules
     verbosity: 1
 
-- name: Ferm | Make sure the directory for firewall rules exist
-  file:
-    path: /etc/ferm
-    state: directory
-    owner: root
-    group: root
-
-- name: Ferm | Create config directory for non-RedHat
-  file:
-    path: /etc/ferm.d
-    state: directory
-    owner: root
-    group: root
-  when: ansible_os_family != "RedHat"
-
-- name: Ferm | Create config directory for RedHat
+- name: Ferm | Create config directories
   file:
     path: /etc/ferm/ferm.d
     state: directory
     owner: root
     group: root
-  when: ansible_os_family == "RedHat"
 
 - name: Ferm | Include ferm.d directory on non-RedHat
   lineinfile:
