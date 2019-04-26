@@ -1,20 +1,17 @@
 ---
 # This Playbook configure firewall 'ferm'
-- name: Ferm | Install Ferm
+- name: Install requirements
   action:
     module: "{{ ansible_pkg_mgr }}"
-    name: ferm
+    name: "{{ item }}"
     state: present
-
-- name: Ferm | Install iptables
-  action:
-    module: "{{ ansible_pkg_mgr }}"
-    name: iptables
-    state: present
+  with_items:
+    - ferm
+    - iptables
 
 # https://github.com/ansible/ansible-modules-core/issues/593
 # msg: no service or tool found for: firewalld
-- name: Ferm | Disable firewalld
+- name: Ferm | Disable other iptable frontends
   service:
     name: "{{ item }}"
     state: stopped
