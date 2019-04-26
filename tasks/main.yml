@@ -101,8 +101,9 @@
     name: ferm
     enabled: yes
 
-- name: If ferm_fail2ban is True - restart fail2ban as well if ferm is reloaded
+- name: Reload services
   service:
-    name: fail2ban
+    name: "{{ item }}"
     state: restarted
-  when: fermreloaded is defined and ferm_fail2ban
+  with_items: "{{ ferm_reload_services }}"
+  when: fermreloaded is defined
