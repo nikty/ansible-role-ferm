@@ -8,7 +8,7 @@ ferm_rules:
       domains: [ip, ip6]
       rules:
         - rule: policy ACCEPT
-          rule: interface lo ACCEPT
+        - rule: interface lo ACCEPT
     - chain: OUTPUT
       domains: [ip, ip6]
       rules:
