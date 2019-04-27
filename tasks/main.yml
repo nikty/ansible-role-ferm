@@ -41,7 +41,7 @@
     - reload ferm
 
 - name: Register ferm.d contents
-  shell: ls -A1 /etc/ferm.d/
+  shell: ls -A1 /etc/ferm/ferm.d/
   register: fermd_contents
   changed_when: False
 
@@ -55,7 +55,7 @@
 
 - name: Clean up unmanaged files from ferm.d
   file:
-    path: "/etc/ferm.d/{{ item }}"
+    path: "/etc/ferm/ferm.d/{{ item }}"
     state: absent
   with_items: "{{ fermd_contents.stdout_lines }}"
   when: item not in ferm_rules
@@ -63,7 +63,7 @@
 - name: Create the default ferm conf files
   template:
     src: rules.conf.j2
-    dest: "/etc/ferm.d/{{item.key}}"
+    dest: "/etc/ferm/ferm.d/{{item.key}}"
     mode: 0655
     owner: root
     group: root
@@ -75,7 +75,7 @@
 - name: Create extra ferm conf files
   template:
     src: rules.conf.j2
-    dest: "/etc/ferm.d/{{item.key}}"
+    dest: "/etc/ferm/ferm.d/{{item.key}}"
     mode: 0655
     owner: root
     group: root
