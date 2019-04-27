@@ -69,6 +69,8 @@
     group: root
     backup: no
   with_dict: "{{ ferm_rules }}"
+  loop_control:
+    label: "{{ item.key }}"
   notify:
     - reload ferm
 
@@ -81,6 +83,8 @@
     group: root
     backup: no
   with_dict: "{{ ferm_rules_extra | default({}) }}"
+  loop_control:
+    label: "{{ item.key }}"
   notify:
     - reload ferm
   when: ferm_rules_extra is defined
