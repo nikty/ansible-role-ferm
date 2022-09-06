@@ -1,18 +1,26 @@
-#{{ ansible_managed }}
-{% for ferm in item.value %}
-{%   if ferm.domains is defined %}
-domain ({% for domain in ferm.domains %}{{domain}} {% endfor %}) table {{ferm.table|default('filter')}} {
-{%   else %}
-{%     if ferm.table|default('filter') == 'filter' %}domain (ip ip6) {% endif %}table {{ferm.table|default('filter')}} {
-{%   endif %}
-  chain {{ferm.chain}}{% if ferm.rules is defined %} {
-{%   for rule in ferm.rules %}
-{%     if rule.comment is defined %}    # {{rule.comment}}
-{%     endif %}
-    {% if (rule.comment is defined and not rule.rule.startswith('policy')) %}mod comment comment "{{ rule.comment }}" {% endif %}{{rule.rule}};
-{%   endfor %}
-  }{% endif %}
+#jinja2: lstrip_blocks: True, trim_blocks: True
+# {{ ansible_managed }}
 
+{% for part in item.value %}
+  {% if part.verbatim is defined -%}
+    {{ part.verbatim }}
+  {% else %}
+
+{% if part.rules | default([]) or (part.chain is defined and part.chain != "") %}
+domain ({{ part.domains | default([ "ip" ]) | join(" ") }}) table {{part.table|default('filter')}} {
+  chain {{part.chain}}{% if part.rules | default([]) %}{{ ' {' }}{% else %}{{ ';' }}{% endif %}
+  
+  {% for rule in part.rules | default([]) %}
+    {% if rule.comment is defined %}
+      # {{rule.comment}}
+    {% endif %}
+    {# {% if (rule.comment is defined and not rule.rule.startswith('policy')) %}mod comment comment "{{ rule.comment }}" {% endif %}{{rule.rule}}; #}
+      {{rule.rule | regex_replace('[\s;]*$', '') }};
+  {%   endfor %}
+  {% if part.rules | default([]) %}{{ '}' }}{% endif %}
+	
 }
 
+{% endif %}
+{% endif %}
 {% endfor %}

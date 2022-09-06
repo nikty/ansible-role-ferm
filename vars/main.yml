@@ -1,8 +1,6 @@
 ---
 
-ferm_disable_firewalls: []
-
-ferm_rules:
+ferm_rules__original:
   01-policies:
     - chain: INPUT
       domains: [ip, ip6]

@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  tasks:
+    - name: "Include vosdev___ansible-ferm-firewall"
+      include_role:
+        name: "vosdev___ansible-ferm-firewall"
