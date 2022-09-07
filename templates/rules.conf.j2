@@ -2,25 +2,24 @@
 # {{ ansible_managed }}
 
 {% for part in item.value %}
-  {% if part.verbatim is defined -%}
-    {{ part.verbatim }}
+  {% if part.content is defined %}
+{{ part.content }}
   {% else %}
-
-{% if part.rules | default([]) or (part.chain is defined and part.chain != "") %}
+    {% if part.rules | default([]) or (part.chain is defined and part.chain != "") %}
 domain ({{ part.domains | default([ "ip" ]) | join(" ") }}) table {{part.table|default('filter')}} {
   chain {{part.chain}}{% if part.rules | default([]) %}{{ ' {' }}{% else %}{{ ';' }}{% endif %}
-  
-  {% for rule in part.rules | default([]) %}
-    {% if rule.comment is defined %}
+
+      {% for rule in part.rules | default([]) %}
+	{% if rule.comment is defined %}
       # {{rule.comment}}
-    {% endif %}
-    {# {% if (rule.comment is defined and not rule.rule.startswith('policy')) %}mod comment comment "{{ rule.comment }}" {% endif %}{{rule.rule}}; #}
-      {{rule.rule | regex_replace('[\s;]*$', '') }};
-  {%   endfor %}
-  {% if part.rules | default([]) %}{{ '}' }}{% endif %}
+        {% endif %}
+	{% set r = rule.rule | regex_replace('[\s;]*$', '') %}
+      {{ r }}{% if not r.endswith('}') %};{% endif %}
+
+      {% endfor %}
+      {% if part.rules | default([]) %}{{ '}' }}{% endif %}
 	
 }
-
-{% endif %}
-{% endif %}
+    {% endif %}
+  {% endif %}
 {% endfor %}

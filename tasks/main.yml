@@ -1,11 +1,25 @@
 ---
 
-- name: Install requirements
-  action:
-    module: "{{ ansible_pkg_mgr }}"
-    name: [ferm, iptables]
-    state: present
+- name: Configure ferm status in debconf
+  debconf:
+    name: 'ferm'
+    question: 'ferm/enable'
+    vtype: 'boolean'
+    value: '{{ "true" if ferm_enabled|bool else "false" }}'
+  when: ansible_pkg_mgr == 'apt'
 
+- name: Install ferm
+  package:
+    name: ferm
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Enable ferm on boot
+  service:
+    name: ferm
+    enabled: yes
+  when: ferm_enabled
+    
 - name: Disable other iptable frontends
   service:
     name: "{{ item }}"
@@ -86,23 +100,3 @@
     - reload ferm
   when: ferm_rules_extra is defined
 
-- name: Flush handlers
-  meta: flush_handlers
-
-- name: Reload ferm
-  service:
-    name: ferm
-    state: restarted
-  when: fermreloaded is defined
-
-- name: Enable ferm on boot
-  service:
-    name: ferm
-    enabled: yes
-
-- name: Reload services
-  service:
-    name: "{{ item }}"
-    state: restarted
-  with_items: "{{ ferm_reload_services }}"
-  when: fermreloaded is defined and ferm_reload_services is defined
