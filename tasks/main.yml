@@ -19,6 +19,14 @@
     name: ferm
     enabled: yes
   when: ferm_enabled
+
+- name: Set ferm in /etc/default/ferm (Debian)
+  lineinfile:
+    path: /etc/default/ferm
+    regexp: '^ENABLED='
+    line: "ENABLED=\"{{ 'yes' if ferm_enabled | bool else 'no' }}\""
+  notify: reload ferm
+  when: ansible_os_family == "Debian"
     
 - name: Disable other iptable frontends
   service:
