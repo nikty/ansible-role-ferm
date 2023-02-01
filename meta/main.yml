@@ -1,11 +1,15 @@
 ---
 galaxy_info:
-  author: alegrand
+  role_name: ferm
+  namespace: nikty
   description: Configure Ferm firewall
-  company: Arkena
   license: MIT
   min_ansible_version: 2.4
   categories:
   - firewall
   - system
+  platforms:
+    - name: Debian
+      versions:
+        - buster
 dependencies: []

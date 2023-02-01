@@ -1,0 +1,54 @@
+ferm_enabled: yes
+ferm_rules_group_all:
+  01-policies:
+    - chain: INPUT
+      domains: [ip, ip6]
+      rules:
+        - rule: policy ACCEPT
+        - rule: mod state state INVALID DROP
+          comment: "Drop invalid packets"
+        - rule: mod state state (ESTABLISHED RELATED) ACCEPT
+          comment: "Allow already established sessions"
+        - rule: interface lo ACCEPT
+          comment: "Allow traffic from localhost interface"
+
+    - chain: OUTPUT
+      domains: [ip, ip6]
+      rules:
+        - rule: policy ACCEPT
+
+    - chain: FORWARD
+      domains: [ip, ip6]
+      rules:
+        - rule: policy DROP
+
+  02-icmp:
+    - chain: INPUT
+      domains: [ip]
+      rules:
+        - rule: proto icmp icmp-type (3 8 11) ACCEPT
+          comment: "Allow dest unreachable, ping and time exceeded messages"
+    - chain: INPUT
+      domains: [ip]
+      rules:
+        - rule: proto ipv6-icmp ACCEPT
+          comment: "Allow all ipv6 icmp messages"
+
+  10-mgmt:
+    - chain: INPUT
+      domains: [ip, ip6]
+      rules:
+        - rule: proto tcp dport ssh saddr (192.168.178.0/28 2001:db8::/64) ACCEPT
+          comment: "Allow SSH from my trusted IPs"
+
+  99-allow-vagrant:
+    - chain: INPUT
+      domains: [ ip ]
+      rules:
+        - rule: proto tcp dport ssh saddr {{ ansible_host ~ '/24' }} ACCEPT
+          
+  99-reject:
+    - chain: INPUT
+      domains: [ip, ip6]
+      rules:
+        - rule: REJECT reject-with icmp-host-prohibited

@@ -11,29 +11,14 @@ With this role you can manage and create a set of global firewall rules and merg
 Requirements
 ------------
 
-hash\_behaviour set to merge in ansible.cfg
-
-```ini
-[defaults]
-hash_behaviour = merge
-```
-
-
-Configuration files and variables structure
--------------------------------------------
-
-
-Example configuration:
-
-`group_vars/all.yml` or `roles/ferm/vars/main.yml` contains your global firewall rules that will apply to all your hosts
-  
-`group_vars/webservers.yml` Firewall rules in this file will only apply to members of the `webservers` group.
-  
-`host_vars/webserver01.yml` can contain rules for a specific host.
+None.
 
 
 Role Variables
 --------------
+
+    ferm_rules: {}
+
 Each key under `ferm_rules` will be created as a configuration file for ferm under `/etc/ferm/ferm.d`. Files in that directory will be handled in alphabetical order. To keep things simple, I maintain the following naming scheme:
 
 - 01-policies
@@ -43,7 +28,22 @@ Each key under `ferm_rules` will be created as a configuration file for ferm und
 - 50-webservers
 - 99-reject-all
 
-Duplicate names will be overridden in the order of variable importancy.
+
+    ferm_rules_group_*: {}
+
+As a way of allowing overriding rules in groups without relying on
+`hash_behaviour` settings, there is support for variables prefixed
+with `ferm_rules_group_`.  These should be set in `group_vars`.
+
+`ferm_rules_group_` variables are merged into `ferm_rules`.
+
+This is done using combine filter iteration over lookup `q('varnames', '^ferm_rules_group_')`. Ansible seems to return variable names in alphabetical order, parent group first.
+
+
+    ferm_combine_rules: True
+
+By default this role combines rules from several variables as described earlier.
+
 
 Examples
 ========
@@ -69,10 +69,10 @@ webserver02
 Global firewall rules
 ---------------------
 
-In `group_vars/all.yml` or `roles/ferm/vars/main.yml`:
+In `group_vars/all.yml`:
 ```yaml
 ---
-ferm_rules:
+ferm_rules_group_all:
   01-policies:
     - chain: INPUT
       domains: [ip, ip6]
@@ -128,7 +128,7 @@ The following rules are applied to all members of the `webservers` group. They a
 ```yaml
 ---
 
-ferm_rules:
+ferm_rules_group_webservers:
   50-webservers:
     - chain: INPUT
       domains: [ip, ip6]

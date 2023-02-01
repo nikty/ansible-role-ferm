@@ -12,5 +12,8 @@ platforms:
     cpus: 1
 provisioner:
   name: ansible
+  inventory:
+    links:
+      group_vars: ../shared/inventory/group_vars
 verifier:
   name: ansible

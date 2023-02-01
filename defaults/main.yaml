@@ -1,2 +1,11 @@
+# Whether to enact ferm rules
+ferm_enabled: no
+
+# List of firewall system services to disable
 ferm_disable_firewalls: []
-ferm_rules: []
+
+# Main dictionary of ferm rules
+ferm_rules: {}
+
+# Whether to combine rules from group_vars and host_vars
+ferm_combine_rules: True

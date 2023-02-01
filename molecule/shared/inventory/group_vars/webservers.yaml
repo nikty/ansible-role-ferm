@@ -1,0 +1,9 @@
+ferm_rules_group_webservers:
+  50-webservers:
+    - chain: INPUT
+      domains: [ip, ip6]
+      rules:
+        - rule: proto tcp dport (http https) ACCEPT
+          comment: "Allow HTTP and HTTPS"
+        - rule: proto tcp dport (8080 8443) saddr (192.168.178.0/24 198.51.100.0/24 2001:db8::/48) ACCEPT
+          comment: "Allow developers to our admin panels"
