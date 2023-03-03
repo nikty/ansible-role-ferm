@@ -1,7 +1,7 @@
 ---
 - name: Combine group rules
   set_fact:
-    ferm_rules: "{{ ferm_rules | combine( lookup('vars', item), recursive=True) }}"
+    ferm_rules: "{{ ferm_rules | combine( lookup('vars', item), recursive=True, list_merge='replace') }}"
   loop: "{{ q('varnames', '^ferm_rules_group_') }}"
   when: ferm_combine_rules | bool
 
@@ -41,6 +41,7 @@
     line: "ENABLED=\"{{ 'yes' if ferm_enabled | bool else 'no' }}\""
   notify: reload ferm
   when: ansible_os_family == "Debian"
+  ignore_errors: "{{ ansible_check_mode }}"
     
 - name: Disable other iptable frontends
   service:
