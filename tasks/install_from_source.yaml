@@ -4,6 +4,7 @@
       - make
       - perl
       - iptables
+      - tar
 
 - name: Get sources
   get_url:
