@@ -1,5 +1,5 @@
 # Whether to enact ferm rules
-ferm_enabled: no
+ferm_enabled: yes
 
 # List of firewall system services to disable
 ferm_disable_firewalls: []
