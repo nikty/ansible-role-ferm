@@ -1,14 +1,21 @@
 ---
 - name: Combine group rules
   set_fact:
-    ferm_rules: "{{ ferm_rules | combine( lookup('vars', item), recursive=True, list_merge='replace') }}"
+    _ferm_rules_groups: "{{ _ferm_rules_groups | default({}) | combine( lookup('vars', item), recursive=True, list_merge='replace') }}"
   loop: "{{ q('varnames', '^ferm_rules_group_') }}"
+  when: ferm_combine_rules | bool
+
+- name: Combine rules with group rules
+  set_fact:
+    ferm_rules: "{{ _ferm_rules_groups | default({}) | combine(ferm_rules, recursive=True, list_merge='replace') }}"
   when: ferm_combine_rules | bool
 
 - name: Display rules var
   debug:
-    var: ferm_rules
+    var: "{{ item }}"
     verbosity: 1
+  loop:
+    - ferm_rules
 
 - apt:
     update_cache: yes
