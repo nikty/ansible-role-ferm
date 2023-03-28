@@ -5,7 +5,7 @@ driver:
   name: vagrant
 platforms:
   - name: test-ansible-role-ferm
-    box: debian/buster64
+    box: ${TEST_PLATFORM_BOX:-debian/buster64}
     config_options:
       synced_folder: false
     memory: 256

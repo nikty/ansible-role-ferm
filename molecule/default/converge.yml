@@ -3,6 +3,13 @@
   hosts: all
   become: yes
   tasks:
+
+    - name: Fix CentOS 8 repos
+      shell:
+        cmd: |
+          sed -i 's@^mirrorlist@#mirrorlist@; s@^#baseurl=@baseurl=@; s@^baseurl=http://mirror.centos.org@baseurl=http://vault.centos.org@' /etc/yum.repos.d/CentOS-Linux-*
+      when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "8"
+    
     - name: "Include ferm"
       include_role:
-        name: "ferm"
+        name: "ansible-role-ferm"

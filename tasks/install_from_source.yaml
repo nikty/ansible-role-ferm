@@ -1,0 +1,30 @@
+- name: Install dependencies
+  package:
+    name:
+      - make
+      - perl
+      - iptables
+
+- name: Get sources
+  get_url:
+    url: "{{ ferm_source_url }}"
+    dest: /tmp/
+  register: get_source
+
+- name: Make and install
+  shell:
+    cmd: |
+      set -e
+      BUILDDIR=/tmp/build-ferm
+      rm -rf $BUILDDIR
+      mkdir $BUILDDIR
+      cd $BUILDDIR
+      tar --strip-components=1 -xf "{{ get_source.dest }}"
+      make install
+
+- name: Template systemd service unit
+  template:
+    src: ferm.service.j2
+    dest: /usr/lib/systemd/system/ferm.service
+
+  

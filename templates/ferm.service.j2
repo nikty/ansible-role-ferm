@@ -1,0 +1,11 @@
+[Unit]
+Description=for Easy Rule Making
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/ferm {{ ferm_conf_dir }}/ferm.conf
+ExecStop=/sbin/ferm --flush {{ ferm_conf_dir }}/ferm.conf
+
+[Install]
+WantedBy=multi-user.target

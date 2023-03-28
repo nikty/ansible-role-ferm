@@ -1,0 +1,27 @@
+- apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Configure ferm status in debconf
+  debconf:
+    name: 'ferm'
+    question: 'ferm/enable'
+    vtype: 'boolean'
+    value: '{{ "true" if ferm_enabled|bool else "false" }}'
+
+- name: Install ferm
+  apt:
+    name: ferm
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Set ferm in /etc/default/ferm (Debian)
+  lineinfile:
+    path: /etc/default/ferm
+    regexp: '^ENABLED='
+    line: "ENABLED=\"{{ 'yes' if ferm_enabled | bool else 'no' }}\""
+  notify: reload ferm
+  when: ansible_os_family == "Debian"
+  ignore_errors: "{{ ansible_check_mode }}"
+    
+    

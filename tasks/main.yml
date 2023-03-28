@@ -17,23 +17,11 @@
   loop:
     - ferm_rules
 
-- apt:
-    update_cache: yes
+- include_tasks: install_debian.yaml
   when: ansible_os_family == "Debian"
 
-- name: Configure ferm status in debconf
-  debconf:
-    name: 'ferm'
-    question: 'ferm/enable'
-    vtype: 'boolean'
-    value: '{{ "true" if ferm_enabled|bool else "false" }}'
-  when: ansible_pkg_mgr == 'apt'
-
-- name: Install ferm
-  package:
-    name: ferm
-  environment:
-    DEBIAN_FRONTEND: noninteractive
+- include_tasks: install_from_source.yaml
+  when: ansible_os_family == "RedHat"
 
 - name: Enable ferm on boot
   service:
@@ -41,16 +29,7 @@
     enabled: yes
   when: ferm_enabled
 
-- name: Set ferm in /etc/default/ferm (Debian)
-  lineinfile:
-    path: /etc/default/ferm
-    regexp: '^ENABLED='
-    line: "ENABLED=\"{{ 'yes' if ferm_enabled | bool else 'no' }}\""
-  notify: reload ferm
-  when: ansible_os_family == "Debian"
-  ignore_errors: "{{ ansible_check_mode }}"
-    
-- name: Disable other iptable frontends
+- name: Disable other iptables frontends
   service:
     name: "{{ item }}"
     state: stopped
@@ -60,7 +39,7 @@
 
 - name: Create config directories
   file:
-    path: /etc/ferm/ferm.d
+    path: "{{ ferm_conf_dir }}/ferm.d"
     state: directory
     owner: root
     group: root
@@ -68,7 +47,7 @@
 - name: Configure ferm.conf
   template:
     src: ferm.conf.j2
-    dest: /etc/ferm/ferm.conf
+    dest: "{{ ferm_conf_dir }}/ferm.conf"
     mode: 0655
     owner: root
     group: root
@@ -77,7 +56,7 @@
     - reload ferm
 
 - name: Register ferm.d contents
-  shell: ls -A1 /etc/ferm/ferm.d/
+  shell: ls -A1 "{{ ferm_conf_dir }}/ferm.d/"
   register: fermd_contents
   changed_when: False
 
@@ -91,7 +70,7 @@
 
 - name: Clean up unmanaged files from ferm.d
   file:
-    path: "/etc/ferm/ferm.d/{{ item }}"
+    path: "{{ ferm_conf_dir }}/ferm.d/{{ item }}"
     state: absent
   with_items: "{{ fermd_contents.stdout_lines }}"
   when: item not in ferm_rules
@@ -99,7 +78,7 @@
 - name: Create ferm conf files
   template:
     src: rules.conf.j2
-    dest: "/etc/ferm/ferm.d/{{item.key}}"
+    dest: "{{ ferm_conf_dir }}/ferm.d/{{item.key}}"
     mode: 0655
     owner: root
     group: root
@@ -113,7 +92,7 @@
 - name: Create extra ferm conf files
   template:
     src: rules.conf.j2
-    dest: "/etc/ferm/ferm.d/{{item.key}}"
+    dest: "{{ ferm_conf_dir }}/ferm.d/{{item.key}}"
     mode: 0655
     owner: root
     group: root
