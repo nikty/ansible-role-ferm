@@ -1,5 +1,8 @@
 ferm_enabled: yes
 ferm_rules_group_all:
+  00-verbatim:
+    - content: |
+        @def $foo = bar;
   01-policies:
     - chain: INPUT
       domains: [ip, ip6]
@@ -46,6 +49,14 @@ ferm_rules_group_all:
       domains: [ ip ]
       rules:
         - rule: proto tcp dport ssh saddr {{ ansible_host ~ '/24' }} ACCEPT
+
+  99-chain-foo:
+    - chain: foo
+
+  99-multiple-chains:
+    - chain: [ bar, baz ]
+      rules:
+        - rule: daddr 192.0.2.1 ACCEPT
           
   99-reject:
     - chain: INPUT

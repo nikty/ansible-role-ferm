@@ -1,25 +1,28 @@
-#jinja2: lstrip_blocks: True, trim_blocks: True
 # {{ ansible_managed }}
 
 {% for part in item.value %}
-  {% if part.content is defined %}
+{%   if part.content is defined %}
 {{ part.content }}
-  {% else %}
-    {% if part.rules | default([]) or (part.chain is defined and part.chain != "") %}
-domain ({{ part.domains | default([ "ip" ]) | join(" ") }}) table {{part.table|default('filter')}} {
-  chain {{part.chain}}{% if part.rules | default([]) %}{{ ' {' }}{% else %}{{ ';' }}{% endif %}
+{%   else %}
+{%     if part.chain is defined %}
+domain ({{ part.domains | default([ "ip" ]) | join(" ") }}) table {{ part.table | default('filter') }} {
+{%       if part.chain is not string and part.chain is not mapping and part.chain is iterable %}
+  chain ({{ part.chain | join(" ") }}) {
+{%       else %}
+  chain {{ part.chain }} {
+{%       endif %}
+{%       for rule in part.rules | default([]) %}
+{%         if rule.comment is defined %}
+    # {{rule.comment}}
+{%         endif %}
+{%         set r = rule.rule | regex_replace(';*$', '') %}
+    {{ r }}{% if not r.endswith('}') %};{% endif %}
 
-      {% for rule in part.rules | default([]) %}
-	{% if rule.comment is defined %}
-      # {{rule.comment}}
-        {% endif %}
-	{% set r = rule.rule | regex_replace('[\s;]*$', '') %}
-      {{ r }}{% if not r.endswith('}') %};{% endif %}
 
-      {% endfor %}
-      {% if part.rules | default([]) %}{{ '}' }}{% endif %}
-	
+{%       endfor %}
+  }
 }
-    {% endif %}
-  {% endif %}
+{%     endif %}
+{%   endif %}
+
 {% endfor %}
