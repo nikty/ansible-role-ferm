@@ -10,9 +10,14 @@ ferm_rules: {}
 # Whether to combine rules from group_vars and host_vars
 ferm_combine_rules: True
 
-# Ferm version when installing from sources
+# Ferm configuration directory
+ferm_conf_dir: /etc/ferm
+
+# Ferm version to install (when installing from source/building RPM)
 ferm_version: 2.7
 
+# Upstream source URL
 ferm_source_url: "https://github.com/MaxKellermann/ferm/archive/refs/tags/v{{ ferm_version }}.tar.gz"
 
-ferm_conf_dir: /etc/ferm
+# Build RPM on RedHat systems
+ferm_build_rpm: True

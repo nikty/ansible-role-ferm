@@ -1,0 +1,55 @@
+- name: Install dependencies
+  package:
+    name:
+      - perl
+      - make
+      - rpm-build
+      - rpm-devel
+      - rpmlint
+      - make
+      - bash
+      - coreutils
+      - diffutils
+      - patch
+      - rpmdevtools
+
+- block:
+    - name: Create temporary directory for rpmbuild
+      tempfile:
+        state: directory
+      register: _ferm_tempdir
+
+    - name: Register temporary directory name
+      set_fact:
+        ferm_build_rpm_topdir: "{{ _ferm_tempdir.path }}"
+
+  when: ferm_build_rpm_topdir is not defined
+
+- name: Prepare rpmbuild environment
+  file:
+    path: "{{ ferm_build_rpm_topdir }}/{{ item }}"
+    state: directory
+  loop:
+    - BUILD
+    - BUILDROOT
+    - RPMS
+    - SOURCES
+    - SPECS
+    - SRPMS
+
+- name: Template RPM spec file
+  template:
+    src: ferm.spec.j2
+    dest: "{{ ferm_build_rpm_topdir }}/SPECS/ferm.spec"
+
+- name: Build and install RPM package
+  shell:
+    cmd: |
+      spectool -g -C "{{ ferm_build_rpm_topdir }}/SOURCES/" "{{ ferm_build_rpm_topdir }}/SPECS/ferm.spec" && 
+      rpmbuild --define='_topdir {{ ferm_build_rpm_topdir }}' -ba "{{ ferm_build_rpm_topdir }}/SPECS/ferm.spec" &&
+      yum -y install "{{ ferm_build_rpm_topdir }}/RPMS/noarch/ferm-{{ ferm_version }}-1.noarch.rpm"
+      
+- name: Clean up rpmbuild environment
+  file:
+    path: "{{ ferm_build_rpm_topdir }}"
+    state: absent

@@ -1,0 +1,10 @@
+- name: Get installed package version
+  shell: rpm -q ferm --queryformat %{VERSION}
+  register: _ferm_installed_rpm_version
+  failed_when: False
+  changed_when: False
+
+- include_tasks: build_rpm_package.yaml
+  when: >-
+    ferm_build_rpm | bool
+    and (_ferm_installed_rpm_version.stdout != ferm_version | string)
