@@ -3,7 +3,9 @@
   set_fact:
     _ferm_rules_groups: "{{ _ferm_rules_groups | default({}) | combine( lookup('vars', item), recursive=True, list_merge='replace') }}"
   loop: "{{ q('varnames', '^ferm_rules_group_') }}"
-  when: ferm_combine_rules | bool
+  when: >
+    ferm_combine_rules | bool
+    and item not in ferm_combine_rules_excludes
 
 - name: Combine rules with group rules
   set_fact:

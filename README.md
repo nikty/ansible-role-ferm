@@ -44,6 +44,10 @@ This is done using combine filter iteration over lookup `q('varnames', '^ferm_ru
 
 By default this role combines rules from several variables as described earlier.
 
+    ferm_combine_rules_excludes: []
+
+List of names of variables to exclude from combining.
+
 
 Examples
 ========

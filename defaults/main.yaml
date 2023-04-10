@@ -10,6 +10,9 @@ ferm_rules: {}
 # Whether to combine rules from group_vars and host_vars
 ferm_combine_rules: True
 
+# List of variable names to exclude from combining.
+ferm_combine_rules_excludes: []
+
 # Ferm configuration directory
 ferm_conf_dir: /etc/ferm
 
