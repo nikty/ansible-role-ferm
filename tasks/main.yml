@@ -59,10 +59,6 @@
     var: fermd_contents
     verbosity: 1
 
-- debug:
-    var: ferm_rule_files
-    verbosity: 1
-
 - name: Clean up unmanaged files from ferm.d
   file:
     path: "{{ ferm_conf_dir }}/ferm.d/{{ item }}"
