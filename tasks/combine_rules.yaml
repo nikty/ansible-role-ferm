@@ -1,0 +1,32 @@
+- name: Combine group rules (all minus excludes)
+  set_fact:
+    _ferm_rules_combined: "{{ _ferm_rules_combined | default({}) | combine( lookup('vars', item), recursive=True, list_merge='replace') }}"
+  loop: "{{ q('varnames', '^ferm_rules_group_') }}"
+  when: >
+    ferm_combine_rules | bool
+    and ferm_combine_rules_all | bool
+    and item not in ferm_combine_rules_excludes
+  register: p
+
+- name: Register names of combined variables
+  set_fact:
+    _ferm_rules_combined_names: "{{ _ferm_rules_combined_names | default([]) + [ item.item ] }}"
+  loop: "{{ p.results }}"
+  when: >-
+    (item.skipped is undefined
+    or not item.skipped)
+
+- name: Combine group rules (includes only)
+  set_fact:
+    _ferm_rules_combined: "{{ _ferm_rules_combined | default({}) | combine( lookup('vars', item), recursive=True, list_merge='replace') }}"
+  loop: "{{ q('varnames', '^ferm_rules_group_') }}"
+  when: >
+    ferm_combine_rules | bool
+    and item not in _ferm_rules_combined_names | default([])
+    and item in ferm_combine_rules_includes
+
+- name: Combine main (host) rules
+  set_fact:
+    ferm_rules: "{{ _ferm_rules_combined | default({}) | combine(ferm_rules, recursive=True, list_merge='replace') }}"
+  when: >-
+    ferm_combine_rules | bool

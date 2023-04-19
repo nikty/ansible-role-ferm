@@ -14,8 +14,11 @@ provisioner:
   name: ansible
   inventory:
     links:
-      group_vars: ../shared/inventory/group_vars
+      hosts: ../shared/inventory/${TEST_INVENTORY:-hosts}
   ansible_args:
     - ${TEST_ANSIBLE_ARGS:---}
+  playbooks:
+    verify: ../shared/tests/${TEST_VERIFY_PLAYBOOK:-../verify.yaml}
 verifier:
   name: ansible
+  

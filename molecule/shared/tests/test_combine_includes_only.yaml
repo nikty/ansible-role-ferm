@@ -1,0 +1,21 @@
+- hosts: all
+  become: yes
+  vars:
+    ferm_combine_rules_includes:
+      - ferm_rules_group_child_group
+    ferm_combine_rules_all: false
+  tasks:
+
+    - include_role:
+        name: ansible-role-ferm
+
+    - assert:
+        that: ferm_rules == config
+      vars:
+        config:
+          02-two:
+            - content: |
+                # child group
+          03-three:
+            - content: |
+                # host

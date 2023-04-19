@@ -1,15 +1,6 @@
 ---
-- name: Combine group rules
-  set_fact:
-    _ferm_rules_groups: "{{ _ferm_rules_groups | default({}) | combine( lookup('vars', item), recursive=True, list_merge='replace') }}"
-  loop: "{{ q('varnames', '^ferm_rules_group_') }}"
-  when: >
-    ferm_combine_rules | bool
-    and item not in ferm_combine_rules_excludes
-
-- name: Combine rules with group rules
-  set_fact:
-    ferm_rules: "{{ _ferm_rules_groups | default({}) | combine(ferm_rules, recursive=True, list_merge='replace') }}"
+- name: Combine rules
+  include_tasks: combine_rules.yaml
   when: ferm_combine_rules | bool
 
 - name: Display rules var

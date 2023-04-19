@@ -1,0 +1,16 @@
+- hosts: all
+  become: yes
+  vars:
+    ferm_combine_rules: false
+  tasks:
+
+    - include_role:
+        name: ansible-role-ferm
+
+    - assert:
+        that: ferm_rules == config
+      vars:
+        config:
+          03-three:
+            - content: |
+                # host

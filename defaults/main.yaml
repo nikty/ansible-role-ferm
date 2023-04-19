@@ -8,10 +8,15 @@ ferm_disable_firewalls: []
 ferm_rules: {}
 
 # Whether to combine rules from group_vars and host_vars
-ferm_combine_rules: True
+ferm_combine_rules: yes
+
+ferm_combine_rules_all: yes
 
 # List of variable names to exclude from combining.
 ferm_combine_rules_excludes: []
+
+# List of variable names to combine.
+ferm_combine_rules_includes: []
 
 # Ferm configuration directory
 ferm_conf_dir: /etc/ferm
