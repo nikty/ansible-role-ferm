@@ -78,7 +78,8 @@ In `group_vars/all.yml`:
 ---
 ferm_rules_group_all:
   01-policies:
-    - chain: INPUT
+    '00':
+      chain: INPUT
       domains: [ip, ip6]
       rules:
         - rule: policy ACCEPT
@@ -89,37 +90,43 @@ ferm_rules_group_all:
         - rule: interface lo ACCEPT
           comment: "Allow traffic from localhost interface"
 
-    - chain: OUTPUT
+    '01':
+      chain: OUTPUT
       domains: [ip, ip6]
       rules:
         - rule: policy ACCEPT
 
-    - chain: FORWARD
+    '02':
+      chain: FORWARD
       domains: [ip, ip6]
       rules:
         - rule: policy DROP
 
   02-icmp:
-    - chain: INPUT
+    '00':
+      chain: INPUT
       domains: [ip]
       rules:
         - rule: proto icmp icmp-type (3 8 11) ACCEPT
           comment: "Allow dest unreachable, ping and time exceeded messages"
-    - chain: INPUT
+    '01':
+      chain: INPUT
       domains: [ip]
       rules:
         - rule: proto ipv6-icmp ACCEPT
           comment: "Allow all ipv6 icmp messages"
 
   10-mgmt:
-    - chain: INPUT
+    '00':
+      chain: INPUT
       domains: [ip, ip6]
       rules:
         - rule: proto tcp dport ssh saddr (192.168.178.0/28 2001:db8::/64) ACCEPT
           comment: "Allow SSH from my trusted IPs"
           
   99-reject:
-    - chain: INPUT
+    '00':
+      chain: INPUT
       domains: [ip, ip6]
       rules:
         - rule: REJECT reject-with icmp-host-prohibited
@@ -134,7 +141,8 @@ The following rules are applied to all members of the `webservers` group. They a
 
 ferm_rules_group_webservers:
   50-webservers:
-    - chain: INPUT
+    '00':
+      chain: INPUT
       domains: [ip, ip6]
       rules:
         - rule: proto tcp dport (http https) ACCEPT
@@ -155,7 +163,8 @@ Webserver01 needs a temporary firewall rule, we can place this in `host_vars/web
 
 ferm_rules:
   30-webserver01:
-    - chain: INPUT
+    '00':
+      chain: INPUT
       domains: [ip, ip6]
       rules:
         - rule: proto tcp dport (ssh) saddr 198.51.100.128/25 2001:db8::beef:/64) ACCEPT

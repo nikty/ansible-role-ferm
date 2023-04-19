@@ -13,10 +13,12 @@
 - include_tasks: install_debian.yaml
   when: >-
     ansible_os_family == "Debian"
+    and ferm_install | bool
 
 - include_tasks: install_redhat.yaml
   when: >-
     ansible_os_family == "RedHat"
+    and ferm_install | bool
 
 - name: Enable ferm on boot
   service:
