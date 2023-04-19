@@ -8,20 +8,30 @@ all:
             test-ansible-role-ferm:
               ferm_rules:
                 03-three:
-                  - content: |
+                  '00':
+                    content: |
+                      # host
+                  '01':
+                    content: |
                       # host
           vars:
             ferm_rules_group_child_group:
               02-two:
-                - content: |
+                '00':
+                  content: |
                     # child group
       vars:
         ferm_rules_group_parent_group:
           01-one:
-            - content: |
+            '00':
+              content: |
                 # parent group
           02-two:
-            - content: |
+            '00':
+              content: |
+                # parent group
+            '01':
+              content: |
                 # parent group
                 
           

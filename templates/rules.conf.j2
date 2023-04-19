@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-{% for part in item.value %}
+{% for key, part in item.value | dictsort('key')  %}
 {%   if part.content is defined %}
 {{ part.content }}
 {%   else %}

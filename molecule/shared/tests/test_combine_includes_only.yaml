@@ -14,8 +14,13 @@
       vars:
         config:
           02-two:
-            - content: |
+            '00':
+              content: |
                 # child group
           03-three:
-            - content: |
+            '00':
+              content: |
+                # host
+            '01':
+              content: |
                 # host

@@ -4,10 +4,12 @@
     ferm_enabled: yes
     ferm_rules_group_all:
       00-verbatim:
-        - content: |
+        '00':
+          content: |
             @def $foo = bar;
       01-policies:
-        - chain: INPUT
+        '00':
+          chain: INPUT
           domains: [ip, ip6]
           rules:
             - rule: policy ACCEPT
@@ -18,54 +20,71 @@
             - rule: interface lo ACCEPT
               comment: "Allow traffic from localhost interface"
     
-        - chain: OUTPUT
+        '01':
+          chain: OUTPUT
           domains: [ip, ip6]
           rules:
             - rule: policy ACCEPT
     
-        - chain: FORWARD
+        '02':
+          chain: FORWARD
           domains: [ip, ip6]
           rules:
             - rule: policy DROP
     
       02-icmp:
-        - chain: INPUT
+        '00':
+          chain: INPUT
           domains: [ip]
           rules:
             - rule: proto icmp icmp-type (3 8 11) ACCEPT
               comment: "Allow dest unreachable, ping and time exceeded messages"
-        - chain: INPUT
+        '01':
+          chain: INPUT
           domains: [ip]
           rules:
             - rule: proto ipv6-icmp ACCEPT
               comment: "Allow all ipv6 icmp messages"
     
       10-mgmt:
-        - chain: INPUT
+        '00':
+          chain: INPUT
           domains: [ip, ip6]
           rules:
             - rule: proto tcp dport ssh saddr (192.168.178.0/28 2001:db8::/64) ACCEPT
               comment: "Allow SSH from my trusted IPs"
     
       99-allow-vagrant:
-        - chain: INPUT
+       '00':
+          chain: INPUT
           domains: [ ip ]
           rules:
             - rule: proto tcp dport ssh saddr {{ ansible_host ~ '/24' }} ACCEPT
     
       99-chain-foo:
-        - chain: foo
+        '00':
+          chain: foo
     
       99-multiple-chains:
-        - chain: [ bar, baz ]
+        '00':
+          chain: [ bar, baz ]
           rules:
             - rule: daddr 192.0.2.1 ACCEPT
               
       99-reject:
-        - chain: INPUT
+        '00':
+          chain: INPUT
           domains: [ip, ip6]
           rules:
             - rule: REJECT reject-with icmp-host-prohibited
+    ferm_rules_group_all_override:
+      01-policies:
+        '01': "{{ omit }}"
+        '02':
+          chain: FORWARD
+          domains: [ip, ip6]
+          rules:
+            - rule: policy ACCEPT        
   tasks:
 
     - include_role:

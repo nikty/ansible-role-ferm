@@ -11,11 +11,20 @@
       vars:
         config:
           01-one:
-            - content: |
+            '00':
+              content: |
                 # parent group
           02-two:
-            - content: |
+            '00':
+              content: |
                 # child group
+            '01':
+              content: |
+                # parent group
           03-three:
-            - content: |
+            '00':
+              content: |
+                # host
+            '01':
+              content: |
                 # host
